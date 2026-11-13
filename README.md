@@ -39,8 +39,3 @@ Al iniciar, la aplicación crea `accounts.db` en el directorio actual. Si la bas
 - `db/connection.py` administra la conexión con SQLite.
 - `middleware/` contiene las respuestas y el manejador de errores.
 
-## A tener en cuenta
-
-Los montos se leen y se calculan con `Decimal`. Sin embargo, la columna SQLite todavía está declarada como `REAL`, así que la base de datos no garantiza un almacenamiento decimal exacto. Para usarlo en un sistema financiero real, convendría guardar los importes como centavos enteros y agregar pruebas de persistencia y transferencias.
-
-El tipo de cuenta es opcional en el esquema actual y el menú de consola todavía no lo solicita.
