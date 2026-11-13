@@ -18,7 +18,7 @@ class AccountRepository(DatabaseConnection):
             CREATE TABLE IF NOT EXISTS accounts (
                 id TEXT PRIMARY KEY,
                 owner TEXT NOT NULL,
-                balance REAL NOT NULL DEFAULT 0,
+                balance_cents INTEGER NOT NULL DEFAULT 0,
                 account_type TEXT NULL
             )
         """)
