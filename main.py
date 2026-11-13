@@ -1,67 +1,95 @@
-from controllers.CuentaControllers import CuentaControllers
-from middleware.response import success, error
-from db.use_cases import useCases
 from uuid import uuid4
 
-connection = useCases()
-cuentaController = CuentaControllers()
-    
+from controllers.AccountController import AccountController
+from db.account_repository import AccountRepository
+from middleware.response import error, success
+
+repository = AccountRepository()
+account_controller = AccountController()
+
+
 def main():
-    while option := input("Ingrese una opción (1: Crear cuenta, 2: Depositar, 3: Extraer, 4: Transferir, 5: Estado de cuenta, 6: Imprimir datos, exit: Salir): "):
-        
+    while option := input(
+        "Choose an option (1: Create account, 2: Deposit, 3: Withdraw, "
+        "4: Transfer, 5: Balance status, 6: Account details, exit: Quit): "
+    ):
         match option:
             case "1":
-                id_account: str = str(uuid4())
-                nombre = input("Ingrese el nombre del titular: ")
-                
-                result = cuentaController.create_account(connection=connection, id_account=id_account, titular=nombre, saldo=0)
+                id_account = str(uuid4())
+                owner = input("Enter the account owner's name: ")
+                result = account_controller.create_account(
+                    repository=repository,
+                    id_account=id_account,
+                    owner=owner,
+                    balance=0,
+                )
                 if result:
-                    print(success(message = f"Cuenta creada con éxito. ID de la cuenta: {id_account}", status_code=201))
+                    print(success(
+                        message=f"Account created successfully. Account ID: {id_account}",
+                        status_code=201,
+                    ))
                 else:
-                    print(error(message="Error al crear la cuenta.", status_code=400))
+                    print(error(message="Could not create the account.", status_code=400))
             case "2":
-                id_account = input("Ingrese el número de cuenta: ")
-                amount = float(input("Ingrese el monto a depositar: "))
-                result = cuentaController.deposit(connection=connection, id_account=id_account, amount=amount)
+                id_account = input("Enter the account ID: ")
+                amount = float(input("Enter the deposit amount: "))
+                result = account_controller.deposit(repository, id_account, amount)
                 if result:
-                    print(success(message=f"Depósito realizado con éxito en la cuenta: {id_account}", status_code=200))
+                    print(success(
+                        message=f"Deposit completed for account {id_account}.",
+                        status_code=200,
+                    ))
                 else:
-                    print(error(message="Error al realizar el depósito.", status_code=400))
+                    print(error(message="Could not complete the deposit.", status_code=400))
             case "3":
-                id_account = input("Ingrese el número de cuenta: ")
-                amount = float(input("Ingrese el monto a extraer: "))
-                result = cuentaController.extraer(connection=connection, id_account=id_account, amount=amount)
+                id_account = input("Enter the account ID: ")
+                amount = float(input("Enter the withdrawal amount: "))
+                result = account_controller.withdraw(repository, id_account, amount)
                 if result:
-                    print(success(message=f"Extracción realizada con éxito en la cuenta: {id_account}", status_code=200))
+                    print(success(
+                        message=f"Withdrawal completed for account {id_account}.",
+                        status_code=200,
+                    ))
                 else:
-                    print(error(message="Error al realizar la extracción.", status_code=400))
+                    print(error(message="Could not complete the withdrawal.", status_code=400))
             case "4":
-                id_account_origen = input("Ingrese el número de cuenta origen: ")
-                id_account_destino = input("Ingrese el número de cuenta destino: ")
-                amount = float(input("Ingrese el monto a transferir: "))
-                result = cuentaController.transferencia(connection=connection, id_account_source=id_account_origen, id_account_target=id_account_destino, amount=amount)
+                source_account_id = input("Enter the source account ID: ")
+                target_account_id = input("Enter the target account ID: ")
+                amount = float(input("Enter the transfer amount: "))
+                result = account_controller.transfer(
+                    repository,
+                    source_account_id,
+                    target_account_id,
+                    amount,
+                )
                 if result:
-                    print(success(message=f"Transferencia realizada con éxito entre las cuentas: {id_account_origen} y {id_account_destino}", status_code=200))
+                    print(success(
+                        message=(
+                            f"Transfer completed from account {source_account_id} "
+                            f"to account {target_account_id}."
+                        ),
+                        status_code=200,
+                    ))
                 else:
-                    print(error(message="Error al realizar la transferencia.", status_code=400))
+                    print(error(message="Could not complete the transfer.", status_code=400))
             case "5":
-                id_account = input("Ingrese el número de cuenta: ")
-                result = cuentaController.estadoCuenta(connection=connection, id_account=id_account)
+                id_account = input("Enter the account ID: ")
+                result = account_controller.balance_status(repository, id_account)
                 if result:
-                    print(success(message=f"Su saldo es {result}", status_code=200))
+                    print(success(message=f"Balance status: {result}.", status_code=200))
                 else:
-                    print(error(message="Error al obtener el estado de la cuenta.", status_code=400))
+                    print(error(message="Could not get the balance status.", status_code=400))
             case "6":
-                id_account = input("Ingrese el número de cuenta: ")
-                result = cuentaController.imprimirDatos(connection=connection, id_account=id_account)
+                id_account = input("Enter the account ID: ")
+                result = account_controller.get_account_details(repository, id_account)
                 if result:
-                    print(success(message=f"Datos de la cuenta {id_account}: {result}", status_code=200))
+                    print(success(message=result, status_code=200))
                 else:
-                    print(error(message="Error al imprimir los datos de la cuenta.", status_code=400))
+                    print(error(message="Could not get the account details.", status_code=400))
             case "exit":
-                print("Saliendo del programa.")
+                print("Exiting the program.")
                 break
-            
+
 
 if __name__ == "__main__":
     main()

@@ -9,5 +9,5 @@ wheels/
 # Virtual environments
 .venv
 
-CuentaBancaria_5.py
+BankAccount.py
 CuentaBancaria_Enunciado.pdf

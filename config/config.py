@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import logging
 import os
 
-load_dotenv()  # Carga las variables de entorno desde el archivo .env
+load_dotenv()  # Load environment variables from the .env file.
 
 logging.basicConfig(
     level=logging.INFO,
@@ -12,6 +12,6 @@ logging.basicConfig(
 def get_logger(name: str):
     return logging.getLogger(name=name)
     
-config_db = {
-    "TABLE": os.getenv("TABLE")
+DATABASE_CONFIG = {
+    "TABLE_NAME": os.getenv("TABLE_NAME", "accounts")
 }

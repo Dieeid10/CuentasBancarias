@@ -1,6 +1,7 @@
 import sqlite3
 
-class Connection():
+
+class DatabaseConnection:
     _instance = None
 
     def __new__(cls):
@@ -9,16 +10,16 @@ class Connection():
             cls._instance._connection = None
         return cls._instance
 
-    def init_connection(self, db_file):
+    def initialize_connection(self, database_file):
         if self._connection is None:
-            self._connection = sqlite3.connect(db_file)
-            print("Conexión iniciada.")
+            self._connection = sqlite3.connect(database_file)
+            print("Database connection opened.")
         else:
-            print("Ya existe una conexión activa, se reutiliza.")
+            print("An active database connection is being reused.")
         return self._connection
 
     def close_connection(self):
         if self._connection is not None:
             self._connection.close()
             self._connection = None
-            print("Conexión cerrada correctamente.")
+            print("Database connection closed.")
