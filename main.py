@@ -1,3 +1,4 @@
+from decimal import Decimal
 from uuid import uuid4
 
 from controllers.AccountController import AccountController
@@ -21,7 +22,7 @@ def main():
                     repository=repository,
                     id_account=id_account,
                     owner=owner,
-                    balance=0,
+                    balance=Decimal("0.00"),
                 )
                 if result:
                     print(success(
@@ -32,7 +33,7 @@ def main():
                     print(error(message="Could not create the account.", status_code=400))
             case "2":
                 id_account = input("Enter the account ID: ")
-                amount = float(input("Enter the deposit amount: "))
+                amount = Decimal(input("Enter the deposit amount: "))
                 result = account_controller.deposit(repository, id_account, amount)
                 if result:
                     print(success(
@@ -43,7 +44,7 @@ def main():
                     print(error(message="Could not complete the deposit.", status_code=400))
             case "3":
                 id_account = input("Enter the account ID: ")
-                amount = float(input("Enter the withdrawal amount: "))
+                amount = Decimal(input("Enter the withdrawal amount: "))
                 result = account_controller.withdraw(repository, id_account, amount)
                 if result:
                     print(success(
@@ -55,7 +56,7 @@ def main():
             case "4":
                 source_account_id = input("Enter the source account ID: ")
                 target_account_id = input("Enter the target account ID: ")
-                amount = float(input("Enter the transfer amount: "))
+                amount = Decimal(input("Enter the transfer amount: "))
                 result = account_controller.transfer(
                     repository,
                     source_account_id,

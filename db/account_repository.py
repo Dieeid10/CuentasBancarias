@@ -1,4 +1,7 @@
+from decimal import Decimal
+
 from db.connection import DatabaseConnection
+from models.Account import Account
 
 
 class AccountRepository(DatabaseConnection):
@@ -36,10 +39,59 @@ class AccountRepository(DatabaseConnection):
 
         self.connection.commit()
 
+    def get_by_id(self, id_account: str) -> Account | None:
+        row = self.connection.execute(
+            """
+            SELECT id, owner, balance, account_type
+            FROM accounts
+            WHERE id = ?
+            """,
+            (id_account,)
+        ).fetchone()
+        if row is None:
+            return None
+
+        return Account(
+            id_account=row[0],
+            owner=row[1],
+            balance=Decimal(str(row[2])),
+            account_type=row[3],
+        )
+
+    def add_account(self, account: Account):
+        return self.insert(
+            "accounts",
+            {
+                "id": account.id_account,
+                "owner": account.owner,
+                "balance": account.balance,
+                "account_type": account.account_type,
+            }
+        )
+
+    def save_account(self, account: Account):
+        return self.update(
+            "accounts",
+            account.id_account,
+            {"balance": account.balance}
+        )
+
+    def save_accounts(self, accounts: tuple[Account, ...]):
+        with self.connection:
+            for account in accounts:
+                self.connection.execute(
+                    "UPDATE accounts SET balance = ? WHERE id = ?",
+                    (str(account.balance), account.id_account)
+                )
+        return True
+
     def insert(self, table_name: str, data: dict):
         column_names = ", ".join(data.keys())
         placeholders = ", ".join(["?"] * len(data))
-        values = tuple(data.values())
+        values = tuple(
+            str(value) if isinstance(value, Decimal) else value
+            for value in data.values()
+        )
         sql = f"INSERT INTO {table_name} ({column_names}) VALUES ({placeholders})"
         cursor = self.connection.execute(sql, values)
         self.connection.commit()
@@ -59,7 +111,10 @@ class AccountRepository(DatabaseConnection):
 
     def update(self, table_name: str, id_value, data: dict, id_field: str = "id"):
         set_clause = ", ".join([f"{column} = ?" for column in data.keys()])
-        values = tuple(data.values()) + (id_value,)
+        values = tuple(
+            str(value) if isinstance(value, Decimal) else value
+            for value in data.values()
+        ) + (id_value,)
         sql = f"UPDATE {table_name} SET {set_clause} WHERE {id_field} = ?"
         self.connection.execute(sql, values)
         self.connection.commit()
