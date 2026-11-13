@@ -8,6 +8,8 @@ wheels/
 
 # Virtual environments
 .venv
+.env
+.myvenv
 
 BankAccount.py
 CuentaBancaria_Enunciado.pdf
